@@ -1,6 +1,9 @@
+package com.project.majorproject;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -13,10 +16,13 @@ public class UserService {
     UserRepository userRepository;
 
     @Autowired
-    RedisTemplate<String,User> redisTemplate;
+    RedisTemplate<String, User> redisTemplate;
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    KafkaTemplate kafkaTemplate;
 
     String addUser(UserRequest userRequest){
         User user= User.builder().
@@ -30,35 +36,39 @@ public class UserService {
         //Save in the Cache
         saveInCache(user);
 
+        //Send an update to wallet module/ wallet service -> create a new wallet
+        kafkaTemplate.send("create_wallet",user.getUserName());
+
         return "User added successfully!";
     }
 
     public void saveInCache(User user){
         Map map= objectMapper.convertValue(user, Map.class);
-
-        redisTemplate.opsForHash().putAll(user.getUserName(),map);
-        redisTemplate.expire(user.getUserName(), Duration.ofHours(12));
+        String key= "USER_KEY"+ user.getUserName();
+        System.out.println("The user key is "+key);
+        redisTemplate.opsForHash().putAll(key,map);
+        redisTemplate.expire(key, Duration.ofHours(12));
     }
 
-    public User findByUsername(String username){
+    public User findByUsername(String userName){
 
         User user= null;
 
         //1. Find is redis cache
-        Map map= redisTemplate.opsForHash().entries(username);
+        Map map= redisTemplate.opsForHash().entries(userName);
 
         //2.If not found in the redis/map
         if(map==null)
         {
             //3. Find the userobject from the DB
-            user= userRepository.findByUsername(username);
+            user= userRepository.findByUserName(userName);
 
             //4. Save in the Redis cache
             saveInCache(user);
         }
         else
         {
-            user= objectMapper.convertValue(map,User.class);
+            user= objectMapper.convertValue(map, User.class);
 
         }
         return user;

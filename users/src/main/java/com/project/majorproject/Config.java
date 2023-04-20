@@ -1,5 +1,8 @@
+package com.project.majorproject;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,21 +21,24 @@ import java.util.Properties;
 @Configuration
 public class Config {
 
+
+
+
     @Bean
-    LettuceConnectionFactory getConnection(){
+    LettuceConnectionFactory getConnectionFactory(){
 
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
 
         LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisStandaloneConfiguration);
+        return lettuceConnectionFactory;
 
-        return  lettuceConnectionFactory;
     }
 
 
     @Bean
     RedisTemplate getRedisTemplate(){
 
-        RedisTemplate<String,User> redisTemplate = new RedisTemplate<>();
+        RedisTemplate<String, User> redisTemplate = new RedisTemplate<>();
 
         RedisSerializer<String> stringRedisSerializer = new StringRedisSerializer();
 
@@ -43,7 +49,7 @@ public class Config {
         redisTemplate.setValueSerializer(jdkSerializationRedisSerializer);
         redisTemplate.setHashValueSerializer(jdkSerializationRedisSerializer);
 
-        redisTemplate.setConnectionFactory(getConnection());
+        redisTemplate.setConnectionFactory(getConnectionFactory());
 
         return redisTemplate;
     }
@@ -53,25 +59,25 @@ public class Config {
         return new ObjectMapper();
     }
 
+    //Properties
     @Bean
-    Properties kafkaProperties(){
-        Properties properties= new Properties();
-        properties.put(ProudcerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        properties.put(ProudcerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        properties.put(ProudcerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+    Properties kafkaProps(){
+
+        Properties properties = new Properties();
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
         return properties;
     }
 
-    //ProducerFactory
     @Bean
-    ProducerFactory<String,String> getProducerFactory(){
-        return new DefaultKafkaProducerFactory<>(kafkaProperties());
-
+    ProducerFactory<String, String> getProducerFactory(){
+        return new DefaultKafkaProducerFactory(kafkaProps());
     }
 
-    //Kafka Template
-    KafkaTemplate<String,String> getKafkaTemplate(){
-        return new KafkaTemplate<>(getProducerFactory());
+    @Bean
+    KafkaTemplate<String, String> getKafkaTemplate(){
+        return new KafkaTemplate(getProducerFactory());
     }
 }

@@ -1,4 +1,5 @@
-import lombok.Getter;
+package com.project.majorproject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,12 +11,12 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/add")
-    String createUser(UserRequest userRequest){
+    String createUser(@RequestBody UserRequest userRequest){
         return userService.addUser(userRequest);
     }
 
-    @GetMapping("/findByUsername/{username}")
-    User findByUsername(@PathVariable() String username){
-        return userService.findByUsername(username);
+    @GetMapping("/findByUsername/{userName}")
+    User findByUsername(@PathVariable("userName") String userName){
+        return userService.findByUsername(userName);
     }
 }
