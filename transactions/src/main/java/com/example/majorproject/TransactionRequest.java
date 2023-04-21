@@ -7,6 +7,6 @@ public class TransactionRequest {
 
     private String fromUser;
     private String toUser;
-    private double amount;
+    private int amount;
     private String purpose;
 }

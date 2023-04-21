@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Entity
-@Table(name="transactions")
+@Table(name="transaction")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -17,11 +17,10 @@ import java.util.Date;
 public class Transaction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private String transactionId;
     private String fromUser;
     private String toUser;
-    private double amount;
+    private int amount;
     @Enumerated(value = EnumType.STRING)
     private TransactionStatus transactionStatus;
     private Date transactionDate;

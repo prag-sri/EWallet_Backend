@@ -19,4 +19,10 @@ public class UserController {
     User findByUsername(@PathVariable("userName") String userName){
         return userService.findByUsername(userName);
     }
+
+    @GetMapping("/findEmailDTO/{userName}")
+    public UserResponseDTO getEmailNameDTO(@PathVariable("userName") String userName)
+    {
+        return userService.finEmailAndNameDTO(userName);
+    }
 }

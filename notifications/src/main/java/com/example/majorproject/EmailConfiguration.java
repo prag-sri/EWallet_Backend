@@ -1,4 +1,4 @@
-package com.project.majorproject;
+package com.example.majorproject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -9,22 +9,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
-import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.util.Properties;
 
 @Configuration
-public class Config {
+public class EmailConfiguration {
 
+    //Kafka Consumer Properties: Kafka Consumer will try to be the consumer of this message
     @Bean
     Properties kafkaProps(){
 
         Properties properties = new Properties();
-
-        //Producer properties
-        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
         //Consumer Properties
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -34,12 +32,6 @@ public class Config {
 
         return properties;
     }
-
-    @Bean
-    ProducerFactory<String, String> getProducerFactory(){
-        return new DefaultKafkaProducerFactory(kafkaProps());
-    }
-
 
     @Bean
     ConsumerFactory<String,String> getConsumerFactory(){
@@ -57,12 +49,34 @@ public class Config {
     }
 
     @Bean
-    KafkaTemplate<String, String> getKafkaTemplate(){
-        return new KafkaTemplate(getProducerFactory());
-    }
-
-    @Bean
     ObjectMapper getObjectMapper(){
         return new ObjectMapper();
     }
+
+    @Bean
+    SimpleMailMessage getSimpleMessage(){
+        return new SimpleMailMessage();
+    }
+
+    @Bean
+    JavaMailSender getJavaMailSender(){
+
+        JavaMailSender javaMailSender= new JavaMailSenderImpl();
+
+        ((JavaMailSenderImpl) javaMailSender).setHost("smtp.gmail.com");
+        ((JavaMailSenderImpl) javaMailSender).setPort(587);
+
+        ((JavaMailSenderImpl) javaMailSender).setUsername("backendacciojob@gmail.com");
+        ((JavaMailSenderImpl) javaMailSender).setPassword("Accio1234.");
+
+        Properties properties = ((JavaMailSenderImpl) javaMailSender).getJavaMailProperties();
+
+        properties.put("mail.transport.protocol","smtp");
+        properties.put("mail.smtp.auth","true");
+        properties.put("mail.smtp.stattls.enable","true");
+        properties.put("mail.debug","true");
+
+        return javaMailSender;
+    }
+
 }

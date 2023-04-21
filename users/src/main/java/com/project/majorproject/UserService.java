@@ -28,7 +28,9 @@ public class UserService {
         User user= User.builder().
                 userName(userRequest.getUserName()).
                 age(userRequest.getAge()).
-                mobNo(userRequest.getMobNo()).build();
+                mobNo(userRequest.getMobNo()).
+                email(userRequest.getEmail()).
+                name(userRequest.getName()).build();
 
         //Save in the DB
         userRepository.save(user);
@@ -72,5 +74,13 @@ public class UserService {
 
         }
         return user;
+    }
+
+    public UserResponseDTO finEmailAndNameDTO(String userName)
+    {
+        User user= findByUsername(userName);
+
+        UserResponseDTO userResponseDTO= new UserResponseDTO(user.getUserName(),user.getEmail());
+        return userResponseDTO;
     }
 }
