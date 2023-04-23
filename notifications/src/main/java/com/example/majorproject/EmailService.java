@@ -36,7 +36,7 @@ public class EmailService {
 
         MimeMessage mimeMessage=javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper=new MimeMessageHelper(mimeMessage,true);
-        mimeMessageHelper.setFrom("pragati.sri2411@gmail.com");
+        mimeMessageHelper.setFrom("your_email@gmail.com");
         mimeMessageHelper.setTo(email);
         mimeMessageHelper.setText(messageBody);
         mimeMessageHelper.setSubject("Hi");
@@ -56,7 +56,7 @@ public class EmailService {
 
         MimeMessage mimeMessage=javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper=new MimeMessageHelper(mimeMessage,true);
-        mimeMessageHelper.setFrom("pragati.sri2411@gmail.com");
+        mimeMessageHelper.setFrom("your_email@gmail.com");
         mimeMessageHelper.setTo(email);
         mimeMessageHelper.setText(messageBody);
         mimeMessageHelper.setSubject("User Registration Successful!");
